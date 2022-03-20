@@ -9,6 +9,7 @@ import time
 from datetime import datetime
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+import base64
 
 now = datetime.now()
 date_time = now.strftime("%Y-%m-%d//%H:%M:%S")
@@ -19,6 +20,9 @@ PASSWORD = os.environ.get("PASSWORD")
 PORT_NUMBER = os.environ.get("PORT_NUMBER")
 URL = os.environ.get("URL")
 EMAIL_SHEET_ID = os.environ.get("EMAIL_SHEET_ID")
+scope = os.environ.get("SCOPE")
+spreadsheet_id = os.environ.get("SPREADSHEET_ID")
+sheet_name = os.environ.get("SHEET_NAME")
 
 df_sheet_email = pd.read_csv(f"https://docs.google.com/spreadsheets/d/{EMAIL_SHEET_ID}/export?format=csv")
 time.sleep(1)
@@ -59,35 +63,28 @@ dataframe_list=pd.DataFrame({'DATE//TIME':[date_time],
 final_dataframe = pd.DataFrame([[x] + [z] for x, y in dataframe_list.values for z in y],columns=dataframe_list.columns)
 
 # ------------------------------------------------------
-#### Use this for creating new worksheet ####
 
-# sheets.add_worksheet(title="IPO", rows=final_dataframe.shape[0], cols=final_dataframe.shape[1])
-
-# Use this for updating values in worksheet
-
-
-# ------------------------------------------------------
-
-# ------------------------------------------------------
-# Use this for appending
-
-scope = ['https://spreadsheets.google.com/feeds',
-         'https://www.googleapis.com/auth/drive',
-        'https://www.googleapis.com/auth/drive.file',
-        'https://www.googleapis.com/auth/spreadsheets']
-
-credentials = ServiceAccountCredentials.from_json_keyfile_name(r'E:\VisualStudio\Python\Nepal-IPO\service-account.json', scope)
+credentials = ServiceAccountCredentials.from_json_keyfile_name(service_json, scope)
 client = gspread.authorize(credentials)
-
-spreadsheet_id = '1g5_lAKm_S9OOnOa3IZ53O8iHA4qNREtMRfGuwiwNnuM'
-sheetName = 'IPO DB'
 sheets = client.open_by_key(spreadsheet_id)
 
+#### Use this for creating new worksheet ####
+
+# sheets.add_worksheet(title=sheet_name, rows=final_dataframe.shape[0], cols=final_dataframe.shape[1])
+
+# Use this for creating columns 
+# values = [final_dataframe.columns.values.tolist()] + final_dataframe.values.tolist()
+# sheets.values_append(sheet_name, {'valueInputOption': 'USER_ENTERED'}, {'values': values})
+
+
+# Use this for appending
+
 values = final_dataframe.values.tolist()
-sheets.values_append(sheetName, {'valueInputOption': 'USER_ENTERED'}, {'values': values})
+sheets.values_append(sheet_name, {'valueInputOption': 'USER_ENTERED'}, {'values': values})
 time.sleep(1)
 print("Append Successful")
-# -----------------------------------------------------
+
+#Sending email
 
 # server=smtplib.SMTP('smtp.gmail.com',PORT_NUMBER)
 # msg = EmailMessage()
