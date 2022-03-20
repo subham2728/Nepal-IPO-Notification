@@ -9,7 +9,6 @@ import time
 from datetime import datetime
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
-import base64
 
 now = datetime.now()
 date_time = now.strftime("%Y-%m-%d//%H:%M:%S")
@@ -20,7 +19,6 @@ PASSWORD = os.environ.get("PASSWORD")
 PORT_NUMBER = os.environ.get("PORT_NUMBER")
 URL = os.environ.get("URL")
 EMAIL_SHEET_ID = os.environ.get("EMAIL_SHEET_ID")
-scope = os.environ.get("SCOPE")
 spreadsheet_id = os.environ.get("SPREADSHEET_ID")
 sheet_name = os.environ.get("SHEET_NAME")
 
@@ -64,7 +62,12 @@ final_dataframe = pd.DataFrame([[x] + [z] for x, y in dataframe_list.values for 
 
 # ------------------------------------------------------
 
-credentials = ServiceAccountCredentials.from_json_keyfile_name(service_json, scope)
+scope=['https://spreadsheets.google.com/feeds',
+      'https://www.googleapis.com/auth/drive',
+      'https://www.googleapis.com/auth/drive.file',
+      'https://www.googleapis.com/auth/spreadsheets'
+      ]
+credentials = ServiceAccountCredentials.from_json_keyfile_name(r"E:\VisualStudio\Python\Nepal-IPO\service-account.json", scope)
 client = gspread.authorize(credentials)
 sheets = client.open_by_key(spreadsheet_id)
 
