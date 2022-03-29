@@ -77,12 +77,12 @@ while(True):
     df_sheet_ipo_data = pd.DataFrame(sheet_ipo_data)
     df_sheet_ipo_data = df_sheet_ipo_data.assign(result=df_sheet_ipo_data['IPODATAs'].isin(final_dataframe['IPODATA']).astype(int))
     print(df_sheet_ipo_data[['result']])
-    # if '1' in df_sheet_ipo_data:
-    #     time.sleep(1)
-    #     print("Same data found")
-    # else:
-    #   time.sleep(1)
-    #   print("New data found")
+    if '1' in df_sheet_ipo_data:
+        time.sleep(1)
+        print("Same data found")
+    else:
+      time.sleep(1)
+      print("New data found")
 
     #### Use this for creating new worksheet ####
 
@@ -95,33 +95,33 @@ while(True):
 
       # Use this for appending
 
-      # values = final_dataframe.values.tolist()
-      # sheets.values_append(sheet_name, {'valueInputOption': 'USER_ENTERED'}, {'values': values})
-      # time.sleep(1)
-      # print("Append Successful")
+      values = final_dataframe.values.tolist()
+      sheets.values_append(sheet_name, {'valueInputOption': 'USER_ENTERED'}, {'values': values})
+      time.sleep(1)
+      print("Append Successful")
 
       # #Sending email
-      # server=smtplib.SMTP('smtp.gmail.com',PORT_NUMBER)
-      # msg = EmailMessage()
-      # msg.set_content(check)
-      # msg['Subject'] = '[IMPORTANT] IPO OPEN!!!'
-      # msg['From'] = SENDER_EMAIL
-      # msg['To'] =df_sheet_email.loc[0,'Email']
-      # msg['Bcc']=df_sheet_email['Email']
+      server=smtplib.SMTP('smtp.gmail.com',PORT_NUMBER)
+      msg = EmailMessage()
+      msg.set_content(check)
+      msg['Subject'] = '[IMPORTANT] IPO OPEN!!!'
+      msg['From'] = SENDER_EMAIL
+      msg['To'] =df_sheet_email.loc[0,'Email']
+      msg['Bcc']=df_sheet_email['Email']
 
-      # server.starttls()
-      # try:
-      #   server.login(SENDER_EMAIL,PASSWORD)
-      #   print("Login success")
+      server.starttls()
+      try:
+        server.login(SENDER_EMAIL,PASSWORD)
+        print("Login success")
 
-      #   try:
-      #     server.send_message(msg)
-      #     print("Mail sent")
-      #     time.sleep(1)
-      #     print("Mail sent to : \n",df_sheet_email['Email'])
-      #     server.quit()
-      #   except:
-      #     print("Failed to sent")
-      # except:
-      #   print("Login Fail")
+        try:
+          server.send_message(msg)
+          print("Mail sent")
+          time.sleep(1)
+          print("Mail sent to : \n",df_sheet_email['Email'])
+          server.quit()
+        except:
+          print("Failed to sent")
+      except:
+        print("Login Fail")
 
